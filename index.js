@@ -25,7 +25,8 @@ module.exports = {
         environment: "production",
         logUrl: null,
         deploymentId: null,
-        description: ""
+        description: "",
+        environment_url: ""
       },
 
       async willDeploy() {
@@ -110,7 +111,11 @@ module.exports = {
         const logUrl = this.readConfig("logUrl");
 
         if (id) {
-          const body = { state: state, description: description };
+          const body = {
+            state,
+            description,
+            environment_url: this.readConfig("environmentUrl")
+          };
 
           if (logUrl) {
             body.log_url = logUrl;

@@ -147,6 +147,14 @@ Optional name for the target deployment environment (e.g., production, staging, 
 
 _Default:_ `'production'`
 
+### environmentUrl
+
+Sets the URL for accessing your environment. See the [GitHub docs][4] for more info.
+
+Either a `string` or a `function` can be provided; the `function` receives the `ref` as an argument and should return a `string`.
+
+_Default:_ `''`
+
 ### description
 
 Short description of the deployment. See the [GitHub docs][3] for more info.
