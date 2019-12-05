@@ -1,71 +1,75 @@
-/* jshint node: true */
-'use strict';
+"use strict";
 
-var BasePlugin = require('ember-cli-deploy-plugin');
-
-var Promise = require('rsvp').Promise;
+const BasePlugin = require("ember-cli-deploy-plugin");
 
 module.exports = {
-  name: 'ember-cli-deploy-github-deployment-status',
+  name: "ember-cli-deploy-github-deployment-status",
 
-  createDeployPlugin: function(options) {
-    var Plugin = BasePlugin.extend({
+  createDeployPlugin(options) {
+    const Plugin = BasePlugin.extend({
       name: options.name,
 
-      requiredConfig: ['org', 'repo', 'ref'],
+      requiredConfig: ["org", "repo", "ref"],
 
       defaultConfig: {
         token: null,
-        task: 'deploy',
+        task: "deploy",
         autoMerge: false,
         requiredContexts: [],
         payload: null,
-        environment: 'production',
+        environment: "production",
         targetUrl: null,
         deploymentId: null
       },
 
-      setup: function(context) {
+      setup(context) {
         context[this.name] = context[this.name] || {};
-        context[this.name]._client = context._fakeRequest || { request: require('request-promise') };
+        context[this.name]._client = context._fakeRequest || {
+          request: require("request-promise")
+        };
       },
 
-      willDeploy: function(context) {
-        var pluginName   = this.name;
-        var token        = this.readConfig('token');
-        var org          = this.readConfig('org');
-        var repo         = this.readConfig('repo');
-        var ref          = this.readConfig('ref');
-        var environment  = this.readConfig('environment');
-        var autoMerge    = this.readConfig('autoMerge');
-        var contexts     = this.readConfig('requiredContexts');
-        var payload      = this.readConfig('payload');
+      willDeploy(context) {
+        const pluginName = this.name;
+        const token = this.readConfig("token");
+        const org = this.readConfig("org");
+        const repo = this.readConfig("repo");
+        const ref = this.readConfig("ref");
+        const environment = this.readConfig("environment");
+        const autoMerge = this.readConfig("autoMerge");
+        const contexts = this.readConfig("requiredContexts");
+        const payload = this.readConfig("payload");
 
-        var deploymentId = this.readConfig('deploymentId');
-        var promise;
+        const deploymentId = this.readConfig("deploymentId");
+        let promise;
 
         if (deploymentId) {
           promise = Promise.resolve({ id: deploymentId });
         } else {
-          var client = context[pluginName]._client;
+          const client = context[pluginName]._client;
 
-          var body = {
+          const body = {
             ref: ref,
             auto_merge: autoMerge,
             required_contexts: contexts,
             environment: environment,
-            description: 'Deploying'
+            description: "Deploying"
           };
 
           if (payload) {
             body.payload = payload;
           }
 
-          var options = {
-            method: 'POST',
-            uri: 'https://api.github.com/repos/' + org + '/' + repo + '/deployments',
+          const options = {
+            method: "POST",
+            uri:
+              "https://api.github.com/repos/" +
+              org +
+              "/" +
+              repo +
+              "/deployments",
             headers: {
-              'User-Agent': org
+              "User-Agent": org
             },
             body: body,
             json: true
@@ -78,57 +82,81 @@ module.exports = {
           promise = client.request(options);
         }
 
-        return promise.then(function(data) {
-          var response = {};
-          response[pluginName] = { deploymentId: data.id };
+        return promise.then(
+          function(data) {
+            const response = {};
+            response[pluginName] = { deploymentId: data.id };
 
-          return response;
-        }, function(reason) {
-          this.log('Error creating github deployment: ' + reason, { verbose: true, color: 'yellow'});
-          var response = {};
-          response[pluginName] = { deploymentId: null };
+            return response;
+          },
+          function(reason) {
+            this.log("Error creating github deployment: " + reason, {
+              verbose: true,
+              color: "yellow"
+            });
+            const response = {};
+            response[pluginName] = { deploymentId: null };
 
-          return response;
-        }.bind(this));
+            return response;
+          }.bind(this)
+        );
       },
 
-      didDeploy: function(context) {
-        var pluginName = this.name;
-        var id         = context[pluginName].deploymentId;
+      didDeploy(context) {
+        const pluginName = this.name;
+        const id = context[pluginName].deploymentId;
 
-        var client = context[pluginName]._client;
+        const client = context[pluginName]._client;
 
-        return this._updateDeployment.call(this, id, 'success', 'Deployed successfully', client);
+        return this._updateDeployment.call(
+          this,
+          id,
+          "success",
+          "Deployed successfully",
+          client
+        );
       },
 
-      didFail: function(context) {
-        var pluginName  = this.name;
-        var id          = context[pluginName].deploymentId;
+      didFail(context) {
+        const pluginName = this.name;
+        const id = context[pluginName].deploymentId;
 
-        var client = context[pluginName]._client;
+        const client = context[pluginName]._client;
 
-        return this._updateDeployment.call(this, id, 'failure', 'Deploy failed', client);
+        return this._updateDeployment.call(
+          this,
+          id,
+          "failure",
+          "Deploy failed",
+          client
+        );
       },
 
-      _updateDeployment: function(id, state, description, client) {
-        var token       = this.readConfig('token');
-        var org         = this.readConfig('org');
-        var repo        = this.readConfig('repo');
-        var targetUrl   = this.readConfig('targetUrl');
+      _updateDeployment(id, state, description, client) {
+        const token = this.readConfig("token");
+        const org = this.readConfig("org");
+        const repo = this.readConfig("repo");
+        const targetUrl = this.readConfig("targetUrl");
 
         if (id) {
-          var body = { state: state, description: description };
+          const body = { state: state, description: description };
 
           if (targetUrl) {
             body.target_url = targetUrl;
           }
 
-          var options = {
-
-            method: 'POST',
-            uri: 'https://api.github.com/repos/' + org + '/' + repo + '/deployments/' + id + '/statuses',
+          const options = {
+            method: "POST",
+            uri:
+              "https://api.github.com/repos/" +
+              org +
+              "/" +
+              repo +
+              "/deployments/" +
+              id +
+              "/statuses",
             headers: {
-              'User-Agent': org
+              "User-Agent": org
             },
             body: body,
             json: true

@@ -18,6 +18,7 @@ For more information on what plugins are and how they work, please refer to the
 [Plugin Documentation][2].
 
 ## Quick Start
+
 To get up and running quickly, do the following:
 
 - Install this plugin
@@ -29,11 +30,11 @@ $ ember install ember-cli-deploy-github-deployment-status
 - Place the following configuration into `config/deploy.js`
 
 ```javascript
-ENV['github-deployment-status'] = {
-  org: '<github-org>',
-  repo: '<github-repo>',
-  ref: '<commit-ish-ref>'
-}
+ENV["github-deployment-status"] = {
+  org: "<github-org>",
+  repo: "<github-repo>",
+  ref: "<commit-ish-ref>"
+};
 ```
 
 - Run the pipeline
@@ -68,6 +69,7 @@ If, however, the deployment fails and the `didFail` hook is fired, the deploymen
 failed.
 
 ## Installation
+
 Run the following command in your terminal:
 
 ```bash
@@ -110,7 +112,7 @@ An access token that has access to read and modify deplyoment statuses. This is
 only needed if the repo is "private". The access token must have either the
 `repo` or `repo_dpeloyment` scopes enabled.
 
-*Default:* `null`
+_Default:_ `null`
 
 ### deploymentId
 
@@ -119,7 +121,7 @@ You might use this if you have some other system that has created the the deploy
 
 If this property does not exist, this plugin will create the deployment as well.
 
-*Default:* `null`
+_Default:_ `null`
 
 ### targetUrl
 
@@ -128,21 +130,21 @@ keep the user updated while the task is running or serve as historical
 information for what happened in the deployment. See the [GitHub docs][4] for
 more info.
 
-*Default:* `null`
+_Default:_ `null`
 
 ### task
 
 Optional parameter to specify a task to execute. See the [GitHub docs][3] for
 more info.
 
-*Default:* `deploy`
+_Default:_ `deploy`
 
 ### autoMerge
 
 Optional parameter to merge the default branch into the requested ref if it is
 behind the default branch. See the [GitHub docs][3] for more info.
 
-*Default:* `false`
+_Default:_ `false`
 
 ### requiredContexts
 
@@ -151,21 +153,21 @@ parameter is omitted from the parameters then all unique contexts will be
 verified before a deployment is created. To bypass checking entirely pass an
 empty array. See the [GitHub docs][3] for more info.
 
-*Default:* `[]`
+_Default:_ `[]`
 
 ### payload
 
 Optional JSON payload with extra information about the deployment. See the
 [GitHub docs][3] for more info.
 
-*Default:* `null`
+_Default:_ `null`
 
 ### environment
 
 Optional name for the target deployment environment (e.g., production, staging,
 qa). See the [GitHub docs][3] for more info.
 
-*Default:* `'production'`
+_Default:_ `'production'`
 
 ## Prerequisites
 
@@ -179,8 +181,5 @@ This plugin has no prerequisites.
 
 [1]: https://developer.github.com/v3/repos/deployments/ "GitHub Deployments API"
 [2]: http://ember-cli-deploy.com/plugins "Plugin Documentation"
-[3]: https://developer.github.com/v3/repos/deployments/#create-a-deployment
-"Github Deployments - Create a Deployment"
-[4]:
-https://developer.github.com/v3/repos/deployments/#create-a-deployment-status
-"Github Deployments - Create a Deployment Status"
+[3]: https://developer.github.com/v3/repos/deployments/#create-a-deployment "Github Deployments - Create a Deployment"
+[4]: https://developer.github.com/v3/repos/deployments/#create-a-deployment-status "Github Deployments - Create a Deployment Status"
