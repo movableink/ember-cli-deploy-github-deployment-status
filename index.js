@@ -2,9 +2,7 @@
 
 const BasePlugin = require("ember-cli-deploy-plugin");
 const { buildDeployUrl, buildDeployStatusUrl } = require("./lib/build-url");
-
-const CUSTOM_ACCEPT =
-  "application/vnd.github.ant-man-preview+json,application/vnd.github.flash-preview+json";
+const request = require("./lib/request");
 
 module.exports = {
   name: "ember-cli-deploy-github-deployment-status",
@@ -12,6 +10,9 @@ module.exports = {
   createDeployPlugin(options) {
     const Plugin = BasePlugin.extend({
       name: options.name,
+
+      // Injected for easier stubbing in tests
+      _request: request,
 
       requiredConfig: ["org", "repo", "ref"],
 
@@ -26,14 +27,7 @@ module.exports = {
         deploymentId: null
       },
 
-      setup(context) {
-        context[this.name] = context[this.name] || {};
-        context[this.name]._client = context._fakeRequest || {
-          request: require("request-promise")
-        };
-      },
-
-      willDeploy(context) {
+      async willDeploy() {
         const pluginName = this.name;
         const token = this.readConfig("token");
         const org = this.readConfig("org");
@@ -45,94 +39,69 @@ module.exports = {
         const payload = this.readConfig("payload");
 
         const deploymentId = this.readConfig("deploymentId");
-        let promise;
+        let data;
 
-        if (deploymentId) {
-          promise = Promise.resolve({ id: deploymentId });
-        } else {
-          const client = context[pluginName]._client;
+        try {
+          if (deploymentId) {
+            data = { id: deploymentId };
+          } else {
+            const body = {
+              ref: ref,
+              auto_merge: autoMerge,
+              required_contexts: contexts,
+              environment: environment,
+              description: "Deploying"
+            };
 
-          const body = {
-            ref: ref,
-            auto_merge: autoMerge,
-            required_contexts: contexts,
-            environment: environment,
-            description: "Deploying"
-          };
+            if (payload) {
+              body.payload = payload;
+            }
 
-          if (payload) {
-            body.payload = payload;
+            const options = {
+              headers: {
+                "User-Agent": org
+              },
+              body
+            };
+
+            if (token) {
+              options.queryString = { access_token: token };
+            }
+            data = await this._request(buildDeployUrl(org, repo), options);
           }
 
-          const options = {
-            method: "POST",
-            uri: buildDeployUrl(org, repo),
-            headers: {
-              Accept: CUSTOM_ACCEPT,
-              "User-Agent": org
-            },
-            body: body,
-            json: true
-          };
+          const response = {};
+          response[pluginName] = { deploymentId: data.id };
 
-          if (token) {
-            options.qs = { access_token: token };
-          }
+          return response;
+        } catch (error) {
+          this.log("Error creating github deployment: " + error.message, {
+            verbose: true,
+            color: "yellow"
+          });
 
-          promise = client.request(options);
+          const response = {};
+          response[pluginName] = { deploymentId: null };
+
+          return response;
         }
-
-        return promise.then(
-          function(data) {
-            const response = {};
-            response[pluginName] = { deploymentId: data.id };
-
-            return response;
-          },
-          function(reason) {
-            this.log("Error creating github deployment: " + reason, {
-              verbose: true,
-              color: "yellow"
-            });
-            const response = {};
-            response[pluginName] = { deploymentId: null };
-
-            return response;
-          }.bind(this)
-        );
       },
 
       didDeploy(context) {
         const pluginName = this.name;
         const id = context[pluginName].deploymentId;
 
-        const client = context[pluginName]._client;
-
-        return this._updateDeployment.call(
-          this,
-          id,
-          "success",
-          "Deployed successfully",
-          client
-        );
+        return this._updateDeployment(id, "success", "Deployed successfully");
       },
 
       didFail(context) {
         const pluginName = this.name;
         const id = context[pluginName].deploymentId;
 
-        const client = context[pluginName]._client;
-
-        return this._updateDeployment.call(
-          this,
-          id,
-          "failure",
-          "Deploy failed",
-          client
-        );
+        return this._updateDeployment(id, "failure", "Deploy failed");
       },
 
-      _updateDeployment(id, state, description, client) {
+      _updateDeployment(id, state, description) {
         const token = this.readConfig("token");
         const org = this.readConfig("org");
         const repo = this.readConfig("repo");
@@ -146,21 +115,17 @@ module.exports = {
           }
 
           const options = {
-            method: "POST",
-            uri: buildDeployStatusUrl(org, repo, id),
             headers: {
-              Accept: CUSTOM_ACCEPT,
               "User-Agent": org
             },
-            body: body,
-            json: true
+            body
           };
 
           if (token) {
-            options.qs = { access_token: token };
+            options.queryString = { access_token: token };
           }
 
-          return client.request(options);
+          return this._request(buildDeployStatusUrl(org, repo, id), options);
         }
 
         return Promise.resolve();

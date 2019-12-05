@@ -1,6 +1,7 @@
 const subject = require("../../index");
+const { buildDeployStatusUrl } = require("../../lib/build-url");
 
-let mockUi;
+let instance, mockUi;
 
 beforeEach(function() {
   mockUi = {
@@ -11,13 +12,15 @@ beforeEach(function() {
       this.messages.push(message);
     }
   };
-});
 
-test("updates the deploment status on failure", async function() {
-  const instance = subject.createDeployPlugin({
+  instance = subject.createDeployPlugin({
     name: "github-deployment-status"
   });
 
+  jest.spyOn(instance, "_request").mockImplementation(() => Promise.resolve());
+});
+
+test("updates the deployment status on failure", async function() {
   const config = {
     org: "foo",
     repo: "bar",
@@ -31,43 +34,29 @@ test("updates the deploment status on failure", async function() {
     config: {
       "github-deployment-status": config
     },
-    "github-deployment-status": { deploymentId: "123" },
-    _fakeRequest: {
-      request(options) {
-        this._options = options;
-
-        return Promise.resolve();
-      }
-    }
+    "github-deployment-status": { deploymentId: "123" }
   };
 
   instance.beforeHook(context);
   instance.configure(context);
-  instance.setup(context);
 
   await instance.didFail(context);
 
-  const options = context["github-deployment-status"]._client._options;
-
-  expect(options.uri).toEqual(
-    "https://api.github.com/repos/foo/bar/deployments/123/statuses"
+  expect(instance._request).toBeCalledWith(
+    buildDeployStatusUrl("foo", "bar", "123"),
+    {
+      headers: { "User-Agent": "foo" },
+      queryString: { access_token: "token" },
+      body: {
+        state: "failure",
+        log_url: "https://support.kayakostage.net",
+        description: "Deploy failed"
+      }
+    }
   );
-  expect(options.method).toEqual("POST");
-  expect(options.json).toEqual(true);
-  expect(options.qs).toEqual({ access_token: "token" });
-  expect(options.headers).toMatchObject({ "User-Agent": "foo" });
-  expect(options.body).toEqual({
-    state: "failure",
-    log_url: "https://support.kayakostage.net",
-    description: "Deploy failed"
-  });
 });
 
 test("doesn't attempt to update deployment if there was an error creating it", async function() {
-  const instance = subject.createDeployPlugin({
-    name: "github-deployment-status"
-  });
-
   const config = {
     org: "foo",
     repo: "bar",
@@ -81,21 +70,13 @@ test("doesn't attempt to update deployment if there was an error creating it", a
     config: {
       "github-deployment-status": config
     },
-    "github-deployment-status": { deploymentId: null },
-    _fakeRequest: {
-      request(options) {
-        this._options = options;
-
-        return Promise.resolve();
-      }
-    }
+    "github-deployment-status": { deploymentId: null }
   };
 
   instance.beforeHook(context);
   instance.configure(context);
-  instance.setup(context);
 
   await instance.didFail(context);
 
-  expect(context["github-deployment-status"]._client._options).toBeUndefined();
+  expect(instance._request).not.toBeCalled();
 });

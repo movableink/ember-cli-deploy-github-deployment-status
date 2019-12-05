@@ -1,4 +1,5 @@
 const subject = require("../../index");
+const { buildDeployUrl } = require("../../lib/build-url");
 
 let mockUi;
 
@@ -19,6 +20,8 @@ describe("deploymentId is provided", function() {
       name: "github-deployment-status"
     });
 
+    jest.spyOn(instance, "_request");
+
     const config = {
       org: "foo",
       repo: "bar",
@@ -27,26 +30,22 @@ describe("deploymentId is provided", function() {
       deploymentId: "9"
     };
 
-    const request = jest.fn();
-
     const context = {
       ui: mockUi,
       config: {
         "github-deployment-status": config
-      },
-      _fakeRequest: {
-        request
       }
     };
 
     instance.beforeHook(context);
     instance.configure(context);
-    instance.setup(context);
 
     const result = await instance.willDeploy(context);
 
-    expect(result["github-deployment-status"].deploymentId).toBe("9");
-    expect(request).not.toBeCalled();
+    expect(instance._request).not.toBeCalled();
+    expect(result).toEqual({
+      "github-deployment-status": { deploymentId: "9" }
+    });
   });
 });
 
@@ -55,6 +54,10 @@ describe("deploymentId is not provided", function() {
     const instance = subject.createDeployPlugin({
       name: "github-deployment-status"
     });
+
+    jest
+      .spyOn(instance, "_request")
+      .mockImplementation(() => Promise.resolve({ id: "123" }));
 
     const config = {
       org: "foo",
@@ -67,45 +70,39 @@ describe("deploymentId is not provided", function() {
       ui: mockUi,
       config: {
         "github-deployment-status": config
-      },
-      _fakeRequest: {
-        request(options) {
-          this._options = options;
-
-          return Promise.resolve({ id: "123" });
-        }
       }
     };
 
     instance.beforeHook(context);
     instance.configure(context);
-    instance.setup(context);
 
     const result = await instance.willDeploy(context);
 
-    const options = context["github-deployment-status"]._client._options;
-
-    expect(options.uri).toBe(
-      "https://api.github.com/repos/foo/bar/deployments"
-    );
-    expect(options.method).toBe("POST");
-    expect(options.json).toBe(true);
-    expect(options.qs).toEqual({ access_token: "token" });
-    expect(options.headers).toMatchObject({ "User-Agent": "foo" });
-    expect(options.body).toEqual({
-      ref: "baz",
-      auto_merge: false,
-      required_contexts: [],
-      environment: "production",
-      description: "Deploying"
+    expect(instance._request).toBeCalledWith(buildDeployUrl("foo", "bar"), {
+      headers: { "User-Agent": "foo" },
+      queryString: { access_token: "token" },
+      body: {
+        ref: "baz",
+        auto_merge: false,
+        required_contexts: [],
+        environment: "production",
+        description: "Deploying"
+      }
     });
-    expect(result["github-deployment-status"].deploymentId).toBe("123");
+
+    expect(result).toEqual({
+      "github-deployment-status": { deploymentId: "123" }
+    });
   });
 
   test("rejects if an error occured creating deployment", async function() {
     const instance = subject.createDeployPlugin({
       name: "github-deployment-status"
     });
+
+    jest
+      .spyOn(instance, "_request")
+      .mockImplementation(() => Promise.reject(new Error("BOOM")));
 
     const config = {
       org: "foo",
@@ -117,23 +114,19 @@ describe("deploymentId is not provided", function() {
       ui: mockUi,
       config: {
         "github-deployment-status": config
-      },
-      _fakeRequest: {
-        request() {
-          return Promise.reject("BOOM");
-        }
       }
     };
 
     instance.beforeHook(context);
     instance.configure(context);
-    instance.setup(context);
 
     const result = await instance.willDeploy(context);
 
     expect(mockUi.messages.pop()).toMatch(
       /Error creating github deployment: BOOM/
     );
-    expect(result["github-deployment-status"].deploymentId).toBeNull();
+    expect(result).toEqual({
+      "github-deployment-status": { deploymentId: null }
+    });
   });
 });

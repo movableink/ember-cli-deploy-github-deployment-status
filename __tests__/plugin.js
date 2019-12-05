@@ -13,9 +13,6 @@ test("implements the correct hooks", function() {
     name: "foo"
   });
 
-  expect(plugin.setup).toBeDefined();
-  expect(plugin.setup).toBeInstanceOf(Function);
-
   expect(plugin.willDeploy).toBeDefined();
   expect(plugin.willDeploy).toBeInstanceOf(Function);
 

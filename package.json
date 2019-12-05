@@ -8,6 +8,10 @@
   },
   "repository": "https://github.com/movableink/ember-cli-deploy-github-deployment-status",
   "license": "MIT",
+  "dependencies": {
+    "ember-cli-deploy-plugin": "0.2.9",
+    "node-fetch": "^2.6.0"
+  },
   "devDependencies": {
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",
@@ -15,15 +19,14 @@
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-prettier": "^3.1.1",
     "jest": "^24.9.0",
+    "nock": "^11.7.0",
     "prettier": "^1.19.1"
   },
   "keywords": [
     "ember-addon",
     "ember-cli-deploy-plugin"
   ],
-  "dependencies": {
-    "ember-cli-deploy-plugin": "0.2.9",
-    "request": "^2.75.0",
-    "request-promise": "^4.1.1"
+  "engines": {
+    "node": ">= 10"
   }
 }
