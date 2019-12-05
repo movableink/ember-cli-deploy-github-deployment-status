@@ -1,6 +1,7 @@
 "use strict";
 
 const BasePlugin = require("ember-cli-deploy-plugin");
+const { buildDeployUrl, buildDeployStatusUrl } = require("./lib/build-url");
 
 const CUSTOM_ACCEPT =
   "application/vnd.github.ant-man-preview+json,application/vnd.github.flash-preview+json";
@@ -65,12 +66,7 @@ module.exports = {
 
           const options = {
             method: "POST",
-            uri:
-              "https://api.github.com/repos/" +
-              org +
-              "/" +
-              repo +
-              "/deployments",
+            uri: buildDeployUrl(org, repo),
             headers: {
               Accept: CUSTOM_ACCEPT,
               "User-Agent": org
@@ -151,14 +147,7 @@ module.exports = {
 
           const options = {
             method: "POST",
-            uri:
-              "https://api.github.com/repos/" +
-              org +
-              "/" +
-              repo +
-              "/deployments/" +
-              id +
-              "/statuses",
+            uri: buildDeployStatusUrl(org, repo, id),
             headers: {
               Accept: CUSTOM_ACCEPT,
               "User-Agent": org
