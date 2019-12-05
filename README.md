@@ -66,7 +66,7 @@ If, however, the deployment fails and the `didFail` hook is fired, the deploymen
 Run the following command in your terminal:
 
 ```bash
-ember install ember-cli-deploy-github-deployment-status
+ember install @movable/ember-cli-deploy-github-deployment-status
 ```
 
 ## ember-cli-deploy hooks implemented
