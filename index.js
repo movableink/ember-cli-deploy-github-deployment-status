@@ -21,7 +21,7 @@ module.exports = {
         requiredContexts: [],
         payload: null,
         environment: "production",
-        targetUrl: null,
+        logUrl: null,
         deploymentId: null
       },
 
@@ -140,13 +140,13 @@ module.exports = {
         const token = this.readConfig("token");
         const org = this.readConfig("org");
         const repo = this.readConfig("repo");
-        const targetUrl = this.readConfig("targetUrl");
+        const logUrl = this.readConfig("logUrl");
 
         if (id) {
           const body = { state: state, description: description };
 
-          if (targetUrl) {
-            body.target_url = targetUrl;
+          if (logUrl) {
+            body.log_url = logUrl;
           }
 
           const options = {

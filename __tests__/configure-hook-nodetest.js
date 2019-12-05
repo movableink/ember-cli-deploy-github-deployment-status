@@ -60,7 +60,7 @@ describe("default config", function() {
     };
   });
 
-  test.each(["token", "payload", "targetUrl", "deploymentId"])(
+  test.each(["token", "payload", "logUrl", "deploymentId"])(
     "provides default",
     function(prop) {
       const instance = subject.createDeployPlugin({

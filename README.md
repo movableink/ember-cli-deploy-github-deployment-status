@@ -53,20 +53,13 @@ deployed version of code.
 
 ## What does it actually do?
 
-Ths plugin uses the [Github Repository Deployments API][1] to create a
-deployment for a commit and to update it's status based on the success or
-failure of your deployment.
+This plugin uses the [Github Repository Deployments API][1] to create a deployment for a commit and to update it's status based on the success or failure of your deployment.
 
-This plugin first implements the `willDeploy` hook where it will create a new
-deployment for the commit ref specified. This will add a new entry to the PR
-with a status of pending.
+This plugin first implements the `willDeploy` hook where it will create a new deployment for the commit ref specified. This will add a new entry to the PR with a status of pending.
 
-Then, if the deployment is successful, in the `didDeploy` hook, it will update the deployment status to
-success. If you provide at `target_url`, then a link will also be added to the
-status.
+Then, if the deployment is successful, in the `didDeploy` hook, it will update the deployment status to success. If you provide at `log_url`, then a link will also be added to the status.
 
-If, however, the deployment fails and the `didFail` hook is fired, the deployment status will be updated to
-failed.
+If, however, the deployment fails and the `didFail` hook is fired, the deployment status will be updated to failed.
 
 ## Installation
 
@@ -123,12 +116,9 @@ If this property does not exist, this plugin will create the deployment as well.
 
 _Default:_ `null`
 
-### targetUrl
+### logUrl
 
-The target URL to associate with this status. This URL should contain output to
-keep the user updated while the task is running or serve as historical
-information for what happened in the deployment. See the [GitHub docs][4] for
-more info.
+The full URL of the deployment's output. See the [GitHub docs][4] for more info.
 
 _Default:_ `null`
 
@@ -168,10 +158,6 @@ Optional name for the target deployment environment (e.g., production, staging,
 qa). See the [GitHub docs][3] for more info.
 
 _Default:_ `'production'`
-
-## Prerequisites
-
-This plugin has no prerequisites.
 
 ## Running Tests
 

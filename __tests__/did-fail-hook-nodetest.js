@@ -23,7 +23,7 @@ test("updates the deploment status on failure", async function() {
     repo: "bar",
     ref: "baz",
     token: "token",
-    targetUrl: "https://support.kayakostage.net"
+    logUrl: "https://support.kayakostage.net"
   };
 
   const context = {
@@ -58,7 +58,7 @@ test("updates the deploment status on failure", async function() {
   expect(options.headers).toMatchObject({ "User-Agent": "foo" });
   expect(options.body).toEqual({
     state: "failure",
-    target_url: "https://support.kayakostage.net",
+    log_url: "https://support.kayakostage.net",
     description: "Deploy failed"
   });
 });
@@ -73,7 +73,7 @@ test("doesn't attempt to update deployment if there was an error creating it", a
     repo: "bar",
     ref: "baz",
     token: "token",
-    targetUrl: "https://support.kayakostage.net"
+    logUrl: "https://support.kayakostage.net"
   };
 
   const context = {
