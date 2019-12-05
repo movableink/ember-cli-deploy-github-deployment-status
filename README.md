@@ -95,21 +95,17 @@ The GitHub repo in which you'd like to update the deployment status
 
 ### ref (required)
 
-The commit-ish ref that is being deployed. This can be a `branch`, `tag` or
-`SHA`. See the [GitHub docs][3] for more info.
+The commit-ish ref that is being deployed. This can be a `branch`, `tag` or `SHA`. See the [GitHub docs][3] for more info.
 
 ### token
 
-An access token that has access to read and modify deplyoment statuses. This is
-only needed if the repo is "private". The access token must have either the
-`repo` or `repo_dpeloyment` scopes enabled.
+An access token that has access to read and modify deplyoment statuses. This is only needed if the repo is "private". The access token must have either the `repo` or `repo_deployment` scopes enabled.
 
 _Default:_ `null`
 
 ### deploymentId
 
-The ID of a github deployment that has been created outside of ember-cli-deploy.
-You might use this if you have some other system that has created the the deployment and kicked off ember-cli-deploy and you merely want this plugin to update the deployment status.
+The ID of a github deployment that has been created outside of ember-cli-deploy. You might use this if you have some other system that has created the the deployment and kicked off ember-cli-deploy and you merely want this plugin to update the deployment status.
 
 If this property does not exist, this plugin will create the deployment as well.
 
@@ -123,40 +119,39 @@ _Default:_ `null`
 
 ### task
 
-Optional parameter to specify a task to execute. See the [GitHub docs][3] for
-more info.
+Optional parameter to specify a task to execute. See the [GitHub docs][3] for more info.
 
 _Default:_ `deploy`
 
 ### autoMerge
 
-Optional parameter to merge the default branch into the requested ref if it is
-behind the default branch. See the [GitHub docs][3] for more info.
+Optional parameter to merge the default branch into the requested ref if it is behind the default branch. See the [GitHub docs][3] for more info.
 
 _Default:_ `false`
 
 ### requiredContexts
 
-Optional array of status contexts verified against commit status checks. If this
-parameter is omitted from the parameters then all unique contexts will be
-verified before a deployment is created. To bypass checking entirely pass an
-empty array. See the [GitHub docs][3] for more info.
+Optional array of status contexts verified against commit status checks. If this parameter is omitted from the parameters then all unique contexts will be verified before a deployment is created. To bypass checking entirely pass an empty array. See the [GitHub docs][3] for more info.
 
 _Default:_ `[]`
 
 ### payload
 
-Optional JSON payload with extra information about the deployment. See the
-[GitHub docs][3] for more info.
+Optional JSON payload with extra information about the deployment. See the [GitHub docs][3] for more info.
 
 _Default:_ `null`
 
 ### environment
 
-Optional name for the target deployment environment (e.g., production, staging,
-qa). See the [GitHub docs][3] for more info.
+Optional name for the target deployment environment (e.g., production, staging, qa). See the [GitHub docs][3] for more info.
 
 _Default:_ `'production'`
+
+### description
+
+Short description of the deployment. See the [GitHub docs][3] for more info.
+
+_Default:_ `''`
 
 ## Running Tests
 

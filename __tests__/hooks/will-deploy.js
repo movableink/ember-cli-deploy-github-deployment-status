@@ -86,7 +86,7 @@ describe("deploymentId is not provided", function() {
         auto_merge: false,
         required_contexts: [],
         environment: "production",
-        description: "Deploying"
+        description: ""
       }
     });
 

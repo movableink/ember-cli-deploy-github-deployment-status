@@ -24,7 +24,8 @@ module.exports = {
         payload: null,
         environment: "production",
         logUrl: null,
-        deploymentId: null
+        deploymentId: null,
+        description: ""
       },
 
       async willDeploy() {
@@ -34,6 +35,7 @@ module.exports = {
         const repo = this.readConfig("repo");
         const ref = this.readConfig("ref");
         const environment = this.readConfig("environment");
+        const description = this.readConfig("description");
         const autoMerge = this.readConfig("autoMerge");
         const contexts = this.readConfig("requiredContexts");
         const payload = this.readConfig("payload");
@@ -49,8 +51,8 @@ module.exports = {
               ref: ref,
               auto_merge: autoMerge,
               required_contexts: contexts,
-              environment: environment,
-              description: "Deploying"
+              environment,
+              description
             };
 
             if (payload) {
