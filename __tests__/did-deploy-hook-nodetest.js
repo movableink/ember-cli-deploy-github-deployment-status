@@ -54,7 +54,7 @@ test("updates the deploment status on success", async function() {
   expect(options.method).toBe("POST");
   expect(options.json).toBe(true);
   expect(options.qs).toEqual({ access_token: "token" });
-  expect(options.headers).toEqual({ "User-Agent": "foo" });
+  expect(options.headers).toMatchObject({ "User-Agent": "foo" });
   expect(options.body).toEqual({
     state: "success",
     target_url: "https://support.kayakostage.net",

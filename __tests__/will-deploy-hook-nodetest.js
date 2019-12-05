@@ -91,7 +91,7 @@ describe("deploymentId is not provided", function() {
     expect(options.method).toBe("POST");
     expect(options.json).toBe(true);
     expect(options.qs).toEqual({ access_token: "token" });
-    expect(options.headers).toEqual({ "User-Agent": "foo" });
+    expect(options.headers).toMatchObject({ "User-Agent": "foo" });
     expect(options.body).toEqual({
       ref: "baz",
       auto_merge: false,

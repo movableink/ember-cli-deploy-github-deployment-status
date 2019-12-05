@@ -55,7 +55,7 @@ test("updates the deploment status on failure", async function() {
   expect(options.method).toEqual("POST");
   expect(options.json).toEqual(true);
   expect(options.qs).toEqual({ access_token: "token" });
-  expect(options.headers).toEqual({ "User-Agent": "foo" });
+  expect(options.headers).toMatchObject({ "User-Agent": "foo" });
   expect(options.body).toEqual({
     state: "failure",
     target_url: "https://support.kayakostage.net",

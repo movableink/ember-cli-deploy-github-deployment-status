@@ -2,6 +2,9 @@
 
 const BasePlugin = require("ember-cli-deploy-plugin");
 
+const CUSTOM_ACCEPT =
+  "application/vnd.github.ant-man-preview+json,application/vnd.github.flash-preview+json";
+
 module.exports = {
   name: "ember-cli-deploy-github-deployment-status",
 
@@ -69,6 +72,7 @@ module.exports = {
               repo +
               "/deployments",
             headers: {
+              Accept: CUSTOM_ACCEPT,
               "User-Agent": org
             },
             body: body,
@@ -156,6 +160,7 @@ module.exports = {
               id +
               "/statuses",
             headers: {
+              Accept: CUSTOM_ACCEPT,
               "User-Agent": org
             },
             body: body,
