@@ -1,4 +1,4 @@
-const subject = require("../index");
+const subject = require("../../index");
 
 let mockUi;
 

@@ -1,6 +1,6 @@
-const subject = require("../index");
+const subject = require("../../index");
 
-let mockUi;
+var mockUi;
 
 beforeEach(function() {
   mockUi = {
@@ -13,7 +13,7 @@ beforeEach(function() {
   };
 });
 
-test("updates the deploment status on failure", async function() {
+test("updates the deploment status on success", async function() {
   const instance = subject.createDeployPlugin({
     name: "github-deployment-status"
   });
@@ -45,21 +45,20 @@ test("updates the deploment status on failure", async function() {
   instance.configure(context);
   instance.setup(context);
 
-  await instance.didFail(context);
+  await instance.didDeploy(context);
 
-  const options = context["github-deployment-status"]._client._options;
-
-  expect(options.uri).toEqual(
+  var options = context["github-deployment-status"]._client._options;
+  expect(options.uri).toBe(
     "https://api.github.com/repos/foo/bar/deployments/123/statuses"
   );
-  expect(options.method).toEqual("POST");
-  expect(options.json).toEqual(true);
+  expect(options.method).toBe("POST");
+  expect(options.json).toBe(true);
   expect(options.qs).toEqual({ access_token: "token" });
   expect(options.headers).toMatchObject({ "User-Agent": "foo" });
   expect(options.body).toEqual({
-    state: "failure",
+    state: "success",
     log_url: "https://support.kayakostage.net",
-    description: "Deploy failed"
+    description: "Deployed successfully"
   });
 });
 
@@ -95,7 +94,7 @@ test("doesn't attempt to update deployment if there was an error creating it", a
   instance.configure(context);
   instance.setup(context);
 
-  await instance.didFail(context);
+  await instance.didDeploy(context);
 
   expect(context["github-deployment-status"]._client._options).toBeUndefined();
 });
