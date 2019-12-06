@@ -50,7 +50,9 @@ test("updates the deploment status on success", async function() {
       body: {
         state: "success",
         log_url: "https://support.kayakostage.net",
-        description: "Deployed successfully"
+        description: "Deployed successfully",
+        environment_url: "",
+        auto_inactive: true
       }
     }
   );
