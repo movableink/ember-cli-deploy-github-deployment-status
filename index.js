@@ -26,7 +26,8 @@ module.exports = {
         logUrl: null,
         deploymentId: null,
         description: "",
-        environmentUrl: ""
+        environmentUrl: "",
+        autoInactive: true
       },
 
       async willDeploy() {
@@ -114,7 +115,8 @@ module.exports = {
           const body = {
             state,
             description,
-            environment_url: this.readConfig("environmentUrl")
+            environment_url: this.readConfig("environmentUrl"),
+            auto_inactive: this.readConfig("autoInactive")
           };
 
           if (logUrl) {

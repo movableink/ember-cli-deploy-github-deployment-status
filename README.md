@@ -161,6 +161,12 @@ Short description of the deployment. See the [GitHub docs][3] for more info.
 
 _Default:_ `''`
 
+### autoInactive
+
+Adds a new `inactive` status to all prior non-transient, non-production environment deployments with the same repository and `environment` name as the created status's deployment. An `inactive` status is only added to deployments that had a `success` state. See the [GitHub docs][4] for more info.
+
+_Default:_ `true`
+
 ## Running Tests
 
 - `npm test`
