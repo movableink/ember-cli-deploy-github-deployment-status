@@ -26,7 +26,7 @@ module.exports = {
         logUrl: null,
         deploymentId: null,
         description: "",
-        environment_url: ""
+        environmentUrl: ""
       },
 
       async willDeploy() {
